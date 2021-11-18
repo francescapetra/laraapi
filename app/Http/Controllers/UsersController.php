@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
@@ -16,8 +17,20 @@ class UsersController extends Controller
     {
        //return User::all(); //mostra una strnga json
 
-        $res['data'] = User::all();
+        // $res['data'] = User::all();
 
+        // return $res;
+        $res = [
+            'data' =>[],
+            'message' => '',
+            'success' => true
+        ];
+        try{
+            $res['data'] = User::all();
+        } catch (\Exception $e){
+            $res['message'] = $e->getMessage();
+            $res['success'] = false;
+        }
         return $res;
     }
 
@@ -50,7 +63,30 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
-        return $user;
+        //return $user;
+        $res = [
+            'data' => [],
+            'message' => '',
+            'success' => true
+        ];
+        try {
+            //$res['data'] = User::where('id', $user)->get();
+            $res['data'] = User::where('id', 1)->first();
+            //dd($res);
+
+        } catch (\Exception $e) {
+            $res['message'] = $e->getMessage();
+            $res['success'] = false;
+        }
+
+        return $res;
+
+
+
+
+        // $res['data'] = User::findOrFail($user);
+
+        // return $res;
     }
 
     /**
@@ -71,9 +107,32 @@ class UsersController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $user)
     {
-        //
+        $data = $request->except(['id']);
+        $res = [
+            'data' => null,
+            'message' => '',
+            'success' => true
+        ];
+
+        try {
+
+            $data['password'] = 'dededede';
+            //$data['password'] = Hash::make($data['password']);
+
+
+            $User = User::findOrFail($user);
+            $User->update($data);
+            $res['data'] = $User;
+
+            $res['message'] = 'User updated!';
+
+        } catch (\Exception $e) {
+            $res['success'] = false;
+            $res['message'] = $e->getMessage();
+        }
+        return $res;
     }
 
     /**

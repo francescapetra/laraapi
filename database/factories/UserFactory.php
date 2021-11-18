@@ -25,7 +25,8 @@ class UserFactory extends Factory
             'age' => $this->faker->numberBetween(18, 120),
             'province' => $this->faker->state(),
             'phone' => $this->faker->phoneNumber(),
-            'lastname' => $this->faker->lastName()
+            'lastname' => $this->faker->lastName(),
+            'fiscalcode' => Str::random(16)
         ];
     }
 

@@ -25,7 +25,7 @@ class User extends Authenticatable
         'province',
         'age',
         'lastname',
-        // 'fiscalcode'
+        'fiscalcode'
     ];
 
     /**
