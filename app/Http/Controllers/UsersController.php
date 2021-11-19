@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use PhpParser\Node\Stmt\TryCatch;
 
 class UsersController extends Controller
 {
@@ -26,7 +27,7 @@ class UsersController extends Controller
             'success' => true
         ];
         try{
-            $res['data'] = User::all();
+            $res['data'] = User::orderBy('id', 'DESC')->get();
         } catch (\Exception $e){
             $res['message'] = $e->getMessage();
             $res['success'] = false;
@@ -52,7 +53,31 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $res = [
+            'data' => [],
+            'message' => 'User Created',
+            'success' => true
+        ];
+
+        try{
+
+            $userData = $request->except('id');
+            $userData['password'] =  $userData['password'] ?? 'dededede';
+            $userData['password'] = \Hash::make($userData['password']);
+            $user = new User();
+            //$user->phone = $request->input('phone'); per il singolo dato
+            $user->fill($userData);
+            $user->save();
+            $res['data'] = $user;
+
+        } catch (\Exception $e) {
+            $res = [
+                'data' => [],
+                'message' => $e->getMessage(),
+                'success' => false
+            ];
+        }
+        return $res;
     }
 
     /**
@@ -61,32 +86,19 @@ class UsersController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+
+    public function show($user)
     {
-        //return $user;
         $res = [
             'data' => [],
-            'message' => '',
-            'success' => true
+            'message' => ''
         ];
         try {
-            //$res['data'] = User::where('id', $user)->get();
-            $res['data'] = User::where('id', 1)->first();
-            //dd($res);
-
+            $res['data'] = User::findOrFail($user);
         } catch (\Exception $e) {
             $res['message'] = $e->getMessage();
-            $res['success'] = false;
         }
-
         return $res;
-
-
-
-
-        // $res['data'] = User::findOrFail($user);
-
-        // return $res;
     }
 
     /**
@@ -143,6 +155,24 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $res = [
+            'data' => $user,
+            'message' => 'user' . $user->id .'deleted',
+            'success' => true
+        ];
+        try {
+
+            $res['success'] = $user->delete();
+
+            if (!$res['success']) {
+                $res['message'] = 'Could not delete $user' . $user->id;
+            }
+
+        } catch (\Exception $e) {
+
+            $res['success'] = false;
+            $res['message'] = $e->getMessage();
+        }
+        return $res;
     }
 }
