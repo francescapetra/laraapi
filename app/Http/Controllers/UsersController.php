@@ -11,7 +11,7 @@ class UsersController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', ['except' => ['login']]);
     }
     /**
      * Display a listing of the resource.
