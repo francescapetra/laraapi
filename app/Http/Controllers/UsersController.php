@@ -66,7 +66,7 @@ class UsersController extends Controller
         try{
 
             $userData = $request->except('id');
-            $userData['password'] =  $userData['password'] ?? 'dededede';
+            //$userData['password'] =  $userData['password'] ?? 'dededede';
             $userData['password'] = \Hash::make($userData['password']);
             $user = new User();
             //$user->phone = $request->input('phone'); per il singolo dato
